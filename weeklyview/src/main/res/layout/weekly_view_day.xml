@@ -1,0 +1,48 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_weight="1"
+    android:layout_height="wrap_content"
+    tools:layout_width="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:gravity="center_horizontal"
+    android:paddingStart="4dp"
+    android:paddingEnd="4dp"
+    android:background="@drawable/selected_day_background">
+
+    <TextView android:id="@+id/day"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        tools:text="Пт"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        android:textAllCaps="false"/>
+
+    <TextView android:id="@+id/date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        tools:text="13"
+        android:textColor="@color/white"
+        android:textSize="20sp" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:gravity="center">
+
+        <View android:id="@+id/dot"
+            android:layout_width="7dp"
+            android:layout_height="7dp"
+            android:layout_marginStart="2dp"
+            android:background="@drawable/red_dot"
+            android:visibility="invisible"/>
+
+    </LinearLayout>
+
+</LinearLayout>
