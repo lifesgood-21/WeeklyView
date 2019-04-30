@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="app_name">WeeklyView</string>
-	<string name="weekday_friday_short">Пт</string>
+    <string name="weekday_friday_short">Пт</string>
 	<string name="weekday_monday_short">Пн</string>
 	<string name="weekday_sunday_short">Вс</string>
 	<string name="weekday_saturday_short">Сб</string>

@@ -1,0 +1,13 @@
+<resources>
+    <declare-styleable name="WeeklyView">
+        <attr name="wv_digit_color" format="color" />
+        <attr name="wv_day_color" format="color" />
+        <attr name="wv_today_color" format="color" />
+        <attr name="wv_today_background_color" format="color" />
+        <attr name="wv_holiday_color" format="color" />
+        <attr name="wv_selected_day_text_color" format="color"/>
+        <attr name="wv_default_background_color" format="color" />
+        <attr name="wv_next_week_res" format="integer"/>
+        <attr name="wv_prev_week_res" format="integer"/>
+    </declare-styleable>
+</resources>

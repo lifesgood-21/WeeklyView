@@ -9,7 +9,7 @@
         android:layout_height="40dp"
         android:layout_centerVertical="true"
         android:scaleType="centerInside"
-        android:tint="@color/black"
+        android:tint="@color/vw_black"
         app:srcCompat="@drawable/ic_chevron_left" />
 
     <ImageView android:id="@+id/nextWeek"
@@ -18,7 +18,7 @@
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:scaleType="centerInside"
-        android:tint="@color/black"
+        android:tint="@color/vw_black"
         app:srcCompat="@drawable/ic_chevron_right" />
 
     <LinearLayout android:id="@+id/weekDaysContainer"
@@ -93,6 +93,6 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_below="@id/weekDaysContainer"
-        android:background="@color/divider"/>
+        android:background="@color/vw_divider"/>
 
 </RelativeLayout>

@@ -1,7 +1,10 @@
-package ru.dnevnik.weeklyview
+package ru.lifesgood.weeklyview
 
 import android.animation.Animator
 import android.content.Context
+import android.content.res.TypedArray
+import android.graphics.PorterDuff
+import android.graphics.drawable.Drawable
 import android.support.annotation.DrawableRes
 import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
@@ -27,18 +30,47 @@ class WeeklyView: FrameLayout {
     private var rightBound = 0L
     private val dayHolders = arrayOfNulls<DayHolder>(7)
     private var dateChangeListener: OnDateChangeListener? = null
-
+    private var defaultTextColor = 0
+    private var selectedDayTextColor = 0
+    private var holidayTextColor = 0
+    private var todayTextColor = 0
+    private var todayBackgroundColor = 0
+    private var defaultBackgroundColor = 0
+    private var prevWeekDrawableRes: Drawable? = null
+    private var nextWeekDrawableRes: Drawable? = null
     private val dateClick = OnClickListener { v ->
         currentMillis = v.tag as Long
         setupDays(false)
         dateChangeListener?.onDateChanged(currentMillis)
     }
 
+    init {
+        nextWeekDrawableRes = ContextCompat.getDrawable(context, R.drawable.ic_chevron_right)
+        prevWeekDrawableRes = ContextCompat.getDrawable(context, R.drawable.ic_chevron_left)
+    }
+
     constructor(context: Context) : super(context)
 
-    constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
+    constructor(context: Context, attrs: AttributeSet): super(context, attrs) {
+        val typedArray = context.obtainStyledAttributes(attrs, R.styleable.WeeklyView)
+        fetchAttrs(typedArray)
+        typedArray.recycle()
+    }
 
     constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
+
+    private fun fetchAttrs(typedArray: TypedArray) {
+        defaultTextColor = typedArray.getColor(R.styleable.WeeklyView_wv_digit_color, getColor(R.color.vw_black))
+        selectedDayTextColor = typedArray.getColor(R.styleable.WeeklyView_wv_selected_day_text_color, getColor(R.color.vw_white))
+        holidayTextColor = typedArray.getColor(R.styleable.WeeklyView_wv_holiday_color, getColor(R.color.vw_gray))
+        todayTextColor = typedArray.getColor(R.styleable.WeeklyView_wv_today_color, getColor(R.color.vw_tangerine_two))
+        todayBackgroundColor = typedArray.getColor(R.styleable.WeeklyView_wv_today_background_color, getColor(R.color.vw_tangerine_two))
+        defaultBackgroundColor = typedArray.getColor(R.styleable.WeeklyView_wv_default_background_color, getColor(R.color.vw_black))
+        typedArray.getDrawable(R.styleable.WeeklyView_wv_next_week_res)?.let { nextWeekDrawableRes = it }
+        typedArray.getDrawable(R.styleable.WeeklyView_wv_prev_week_res)?.let { prevWeekDrawableRes = it }
+    }
+
+    private fun getColor(color: Int )= ContextCompat.getColor(context, color)
 
     override fun onFinishInflate() {
         super.onFinishInflate()
@@ -101,7 +133,7 @@ class WeeklyView: FrameLayout {
     }
 
     private fun setupPrevNextButtons(root: RelativeLayout) {
-        val weekClick = OnClickListener { v ->
+        val changeWeekClickListener = OnClickListener { v ->
             var translationX = width
             when (v.id) {
                 R.id.previousWeek -> {
@@ -121,8 +153,10 @@ class WeeklyView: FrameLayout {
                     .setListener(WeeklyViewReadyToUpdateListener(translationX * -1))
             clearIndicators()
         }
-        root.nextWeek.setOnClickListener(weekClick)
-        root.previousWeek.setOnClickListener(weekClick)
+        root.nextWeek.setImageDrawable(nextWeekDrawableRes)
+        root.previousWeek.setImageDrawable(prevWeekDrawableRes)
+        root.nextWeek.setOnClickListener(changeWeekClickListener)
+        root.previousWeek.setOnClickListener(changeWeekClickListener)
     }
 
     private fun clearIndicators() {
@@ -146,8 +180,8 @@ class WeeklyView: FrameLayout {
         dayHolders[4]?.itemView?.day?.setText(R.string.weekday_friday_short)
         dayHolders[5]?.itemView?.day?.setText(R.string.weekday_saturday_short)
         dayHolders[6]?.itemView?.day?.setText(R.string.weekday_sunday_short)
-        for (holder in dayHolders) {
-            holder?.itemView?.setOnClickListener(dateClick)
+        dayHolders.forEach {
+            it?.itemView?.setOnClickListener(dateClick)
         }
     }
 
@@ -161,67 +195,72 @@ class WeeklyView: FrameLayout {
         todayMillis = currentMillis
     }
 
-    private fun setupDays(notifyWeeklyListener: Boolean) {
+    private fun setupDays(needNotifyWeekChanged: Boolean) {
         calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
         val start = calendar.timeInMillis
-        setDate(0)
+        tuneDayHolder(0)
         for (i in 1..6) {
             calendar.add(Calendar.DATE, 1)
-            setDate(i)
+            tuneDayHolder(i)
         }
-        if (notifyWeeklyListener)
+        if (needNotifyWeekChanged)
             dateChangeListener?.onWeekChanged(start, calendar.timeInMillis, currentMillis)
+        displayPrevWeekControl()
+        displayNextWeekControl()
+    }
 
-        calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
-        previousWeek.visibility = when (calendar.timeInMillis >= leftBound){
-            true -> View.VISIBLE
-            else -> View.GONE
-        }
+    private fun displayNextWeekControl() {
         calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY)
-        nextWeek.visibility = when(calendar.timeInMillis <= rightBound){
+        nextWeek.visibility = when (calendar.timeInMillis <= rightBound) {
             true -> View.VISIBLE
             else -> View.GONE
         }
     }
 
-    private fun setDate(index: Int) {
-        val isSunday = calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY || calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY
+    private fun displayPrevWeekControl() {
+        calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
+        previousWeek.visibility = when (calendar.timeInMillis >= leftBound) {
+            true -> View.VISIBLE
+            else -> View.GONE
+        }
+    }
+
+    private fun tuneDayHolder(index: Int) {
+        val holidays = arrayOf(Calendar.SATURDAY, Calendar.SUNDAY)
+        val isHoliday = calendar.get(Calendar.DAY_OF_WEEK) in holidays
         val isSelected = DateFormat.isSameDay(calendar.timeInMillis, currentMillis)
+        val isToday = DateFormat.isSameDay(calendar.timeInMillis, System.currentTimeMillis())
         val dayHolder = dayHolders[index]
         with(dayHolder!!){
-            val context = itemView.context
             date = calendar.timeInMillis
+            itemView.tag = date
             itemView.date?.text = calendar.get(Calendar.DATE).toString()
-            context?.let { val color = ContextCompat.getColor(context, when (isSelected) {
-                    true -> R.color.white
-                        else -> {when(isSunday){
-                            true -> R.color.gray
-                            else -> R.color.black
-                        }
+            when(isSelected){
+                true -> itemView.setBackgroundResource(R.drawable.selected_day_background)
+                else -> itemView.background = null
+            }
+            when (isToday){
+                true -> itemView.background?.setColorFilter(todayBackgroundColor, PorterDuff.Mode.SRC_ATOP)
+                else -> itemView.background?.setColorFilter(defaultBackgroundColor, PorterDuff.Mode.SRC_ATOP)
+            }
+            val textColor = when (isSelected) {
+                true -> selectedDayTextColor
+                else -> when(isHoliday){
+                    true -> when (isToday){
+                        true -> todayTextColor
+                        else -> holidayTextColor
                     }
-                }
-            )
-                itemView.date?.setTextColor(color)
-                itemView.day?.setTextColor(color)
-            }
-            var background = R.drawable.selected_day_background
-            if (DateFormat.isSameDay(calendar.timeInMillis, System.currentTimeMillis())){
-                setAsCurrentDay()
-                background = R.drawable.selected_same_day_background
-                if (isSelected){
-                    context?.let { itemView.date?.setTextColor(ContextCompat.getColor(it, R.color.white)) }
-                    context?.let { itemView.day?.setTextColor(ContextCompat.getColor(it, R.color.white)) }
+                    else -> defaultTextColor
                 }
             }
+            itemView.date?.setTextColor(textColor)
+            itemView.day?.setTextColor(textColor)
+
             if (isSelected) {
-                itemView.setBackgroundResource(background)
                 itemView.animate()
-                        ?.scaleX(0.95f)
-                        ?.scaleY(0.95f)?.interpolator = CycleInterpolator(1f)
-            } else {
-                itemView.background = null
+                        ?.scaleX(0.95F)
+                        ?.scaleY(0.95F)?.interpolator = CycleInterpolator(1f)
             }
-            itemView.tag = calendar.timeInMillis
         }
     }
 
@@ -235,9 +274,7 @@ class WeeklyView: FrameLayout {
     }
 
     private class DayHolder(val itemView: View) {
-
         var date: Long = 0
-
         init {
             itemView.background = null
         }
@@ -249,16 +286,9 @@ class WeeklyView: FrameLayout {
                  else -> View.INVISIBLE
              }
         }
-
-        fun setAsCurrentDay(){
-            with(itemView){
-                day.setTextColor(ContextCompat.getColor(itemView.context, R.color.tangerine_two))
-                date.setTextColor(ContextCompat.getColor(itemView.context, R.color.tangerine_two))
-            }
-        }
     }
 
-    private inner class WeeklyViewReadyToUpdateListener internal constructor(private val fromX: Int) : Animator.AnimatorListener {
+    private inner class WeeklyViewReadyToUpdateListener (private val fromX: Int) : Animator.AnimatorListener {
 
         override fun onAnimationStart(animation: Animator?) {}
 
@@ -275,17 +305,13 @@ class WeeklyView: FrameLayout {
     }
 
     interface OnDateChangeListener {
-
         fun onDateChanged(millis: Long)
-
         fun onWeekChanged(start: Long, end: Long, current: Long)
-
     }
 
     interface IndicatorsEnabledDelegate{
-
         fun hasIndicator(date: Long): Boolean
-
         fun indicatorRes(date: Long): Int?
     }
+
 }

@@ -6,7 +6,6 @@ apply plugin: 'com.novoda.bintray-release'
 android {
     compileSdkVersion 28
 
-
     defaultConfig {
         minSdkVersion 17
         targetSdkVersion 28
@@ -23,7 +22,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-
 }
 
 dependencies {
@@ -40,10 +38,10 @@ dependencies {
 // это блок будет обработан плагином bintray-release
 publish {
     groupId = 'com.github.lifesgood-21'
-    repoName = 'WeeklyView'
-    artifactId = 'weeklyview'
-    userOrg = 'lifesgood'
-    publishVersion = '0.0.1'
+    repoName = 'maven'
+    artifactId = 'WeeklyView'
+    userOrg = 'larionov'
+    publishVersion = '0.0.2'
     desc = 'A small library for view week'
     licences = ['MIT']
     website = 'https://github.com/lifesgood-21/WeeklyView'

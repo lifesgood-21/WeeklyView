@@ -1,4 +1,4 @@
-package ru.dnevnik.weeklyview
+package ru.lifesgood.weeklyview
 
 import java.util.*
 

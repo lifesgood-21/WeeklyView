@@ -1,5 +1,4 @@
 <resources>
-	<string name="app_name">WeeklyView</string>
 	<string name="weekday_monday_short">Mo</string>
 	<string name="weekday_sunday_short">Su</string>
 	<string name="weekday_thursday_short">Th</string>
