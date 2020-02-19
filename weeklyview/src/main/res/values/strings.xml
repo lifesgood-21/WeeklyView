@@ -1,9 +1,9 @@
 <resources>
 	<string name="weekday_monday_short">Mo</string>
-	<string name="weekday_sunday_short">Su</string>
-	<string name="weekday_thursday_short">Th</string>
 	<string name="weekday_tuesday_short">Tu</string>
 	<string name="weekday_wednesday_short">We</string>
-	<string name="weekday_saturday_short">Sa</string>
+	<string name="weekday_thursday_short">Th</string>
 	<string name="weekday_friday_short">Fr</string>
+	<string name="weekday_saturday_short">Sa</string>
+	<string name="weekday_sunday_short">Su</string>
 </resources>
