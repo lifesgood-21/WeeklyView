@@ -41,7 +41,7 @@ publish {
     repoName = 'maven'
     artifactId = 'WeeklyView'
     userOrg = 'larionov'
-    publishVersion = '0.0.3'
+    publishVersion = '0.0.4'
     desc = 'A small library for view week'
     licences = ['MIT']
     website = 'https://github.com/lifesgood-21/WeeklyView'
